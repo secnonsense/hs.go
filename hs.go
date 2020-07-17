@@ -7,7 +7,13 @@ import (
     "log"
     "net/http"
     "os"
+    "time"
+    "bytes"
+	"io/ioutil"
+    
 )
+
+var file = ""
 
 func createCertnKey(rebuild int) {
     cert:="-----BEGIN CERTIFICATE-----\nMIICLjCCAbUCCQCqjs7a3Kbg+zAKBggqhkjOPQQDAjCBgDELMAkGA1UEBhMCdXMxCzAJBgNVBAgMAmhpMQ8wDQYDVQQHDAZtYXRyaXgxDTALBgNVBAoMBHRlc3QxCzAJBgNVBAsMAmVzMRYwFAYDVQQDDA1zb21ldGhpbmcubGNsMR8wHQYJKoZIhvcNAQkBFhBtZUBzb21ldGhpbmcubGNsMB4XDTIwMDcxNzEzNDU0MloXDTMwMDcxNTEzNDU0MlowgYAxCzAJBgNVBAYTAnVzMQswCQYDVQQIDAJoaTEPMA0GA1UEBwwGbWF0cml4MQ0wCwYDVQQKDAR0ZXN0MQswCQYDVQQLDAJlczEWMBQGA1UEAwwNc29tZXRoaW5nLmxjbDEfMB0GCSqGSIb3DQEJARYQbWVAc29tZXRoaW5nLmxjbDB2MBAGByqGSM49AgEGBSuBBAAiA2IABHjrzQKbirpKOWQfnwp0vc7A0awf82qr2Xb/JAtz7xUJN23WWSgEP5IAWxitxner0KKTlpx/ku54oKqeL9q+hKgbYwg3qMktPDmWkXZIDit8G6lE51H4gVFhOE0SBsYRWjAKBggqhkjOPQQDAgNnADBkAjBuWpInfs8g2vA/nHW/4Cwmv2aAxG36hZ/9OQqgr4VByAClzEgj19uLvD42D1EDXHYCMAsDhaj2BD7yDBrw5rOuQVwuvX8F7W4PaOmwU7VTId1/LV25QdfsdTrj55y2xblbnQ==\n-----END CERTIFICATE-----"
@@ -46,6 +52,10 @@ func writeFile(infile string,outfile string){
 
 func HTTPServer(w http.ResponseWriter, r *http.Request) {
 
+    if len(file) > 0 {
+        data, _ := ioutil.ReadFile(file)
+        http.ServeContent(w, r, file , time.Now(), bytes.NewReader(data))
+    } else {
     fmt.Fprintf(w, "%s %s %s\n", r.Method, r.URL, r.Proto)
     fmt.Printf("%s %s %s\n", r.Method, r.URL, r.Proto)
 	for k, v := range r.Header {
@@ -67,6 +77,7 @@ func HTTPServer(w http.ResponseWriter, r *http.Request) {
 
     fmt.Fprintf(w, "Successful Connection")
     fmt.Printf("Successful Connection\n\n")
+    }
 }
 
 
@@ -78,6 +89,7 @@ func main() {
     var c = false
     var rebuild = 0
     flaggy.String(&p,"p","port" ,"Input the Port")
+    flaggy.String(&file,"f","file" ,"Input file to serve")
     flaggy.Bool(&t,"t","tls" ,"Start TLS server")
     flaggy.Bool(&c,"c","cleanup" ,"Cleanup Cert and Key")
     flaggy.Parse()
