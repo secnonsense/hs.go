@@ -7,3 +7,11 @@ Simple HTTP/HTTPS web server written in go
 |hs -c|Delete the self-signed cert and key from the current directory|
 |hs -f filename|Serve up a file over HTTP (or HTTPS with -t)|
 
+Project files:
+
+| File Name| Operating System|
+|:--|:--|
+|hs|MacOS|
+|hs.exe|Windows|
+|hs.go|Go Script|
+|hsl|Linux|
